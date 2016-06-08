@@ -36,7 +36,7 @@ Base.start(tsi::EquidistantTimeStepperIterator) = tsi.t0
 Base.done(tsi::EquidistantTimeStepperIterator, t) = t >= tsi.tend
 
 function Base.next(tsi::EquidistantTimeStepperIterator, t)
-    step!(tsi.psi, tsi.dt, tsi.scheme, tsi.operator_sequence)
+    step!(tsi.psi, min(tsi.dt,tsi.tend-t), tsi.scheme, tsi.operator_sequence)
     t1 = t + tsi.dt < tsi.tend ? t + tsi.dt : tsi.tend
     t1, t1
 end
