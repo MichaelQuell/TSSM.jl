@@ -71,6 +71,25 @@ function calc_stepmin(psi_ref,psia,psi,scheme,soliton)
     #@printf("||psi-psi_ref||=%5.3E,  h=%20.18E \n",distance(psi,psi_ref),h)
     return h
 end
+function calc_stepmin(psi_ref,psia,psi,scheme,soliton,h)
+    dista=distance(psia,psi_ref)
+    dist=dista*2
+    bounds=1.1
+    #@printf("||psi_a-psi_ref||=%15.10E ,h=%15.10E, h=%15.10E \n",dista,h,stepmin)
+    while dista/dist>bounds || dist/dista>bounds 
+        if dist/dista>1.0
+            h=h/2  
+        else
+            h=h*1.9
+        end
+        set!(psi, soliton)
+        time = @elapsed for t in equidistant_time_stepper(psi, t0, tend, h, scheme, "AB"); end 
+        dist=distance(psi,psi_ref)
+        #@printf("||psi  -psi_ref||=%15.10E ,h=%15.10E, f=%15.10f \n",dist,h,dist/dista)
+    end   
+    #@printf("%15.10E \n",dist/dista)
+    return h
+end
 function latextable(scheme,schemes,tol,nsteps_a,nsteps,time_a,time)
             if scheme==schemes[1]
             @printf("\\texttt{Emb 4/3 AK p}, TOL = \$ 10^{%d} \$ & \$ %d \$ & \$ %d \$ & \$ %5.3f \$ & \$ %5.3f \$ \\\\ \n",tol,nsteps_a,nsteps,time_a,time)
